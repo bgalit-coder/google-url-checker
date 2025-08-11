@@ -43,8 +43,6 @@ pip install -r requirements.txt
 python main.py https://www.wikipedia.org
 If no URL is provided, it defaults to https://www.google.com.
 
-4. Run tests with pytest
-pytest -q
 
 🐳 Run in Docker
 
