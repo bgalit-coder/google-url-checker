@@ -8,23 +8,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import os
 import urllib.parse
+import tldextract
 
-# Function to extract main keyword (domain name part) from URL
+# Function to extract the site name (registrable domain's SLD) from any URL
+# Example: https://news.google.co.uk -> "google"
 def extract_keyword_from_url(url):
-    # Parse the URL
-    parsed = urllib.parse.urlparse(url)
-    hostname = parsed.hostname or ""
-    parts = hostname.split(".")
-    # Filter out common subdomains and TLDs to get the main domain part
-    common = {"www", "com", "org", "net", "co", "il"}
-    filtered = [part for part in parts if part not in common]
-    # Return the first filtered part or empty string if none found
-    return filtered[0] if filtered else ""
+    extracted = tldextract.extract(url)
+    # extracted.domain gives the SLD (second-level domain) which is stable across TLDs and subdomains
+    return extracted.domain or ""
 
 # Main function to check URL and save results
 def check_url(url):
-    # Extract keyword from input URL
-    keyword = extract_keyword_from_url(url)
+    # Extract site name from input URL
+    input_site_name = extract_keyword_from_url(url)
 
     # Set Chrome options for headless browsing
     options = Options()
@@ -44,27 +40,27 @@ def check_url(url):
 
     # Get the current URL after all redirections
     current_url = driver.current_url
+    # Extract site name from final URL after redirects
+    final_site_name = extract_keyword_from_url(current_url)
 
     # Close the browser
     driver.quit()
 
-    # Check if the extracted keyword is in the current URL (case-insensitive)
-    is_valid = keyword.lower() in current_url.lower()
+    # Validate that the site names (input vs final) match exactly
+    is_valid = (input_site_name.lower() == final_site_name.lower()) if input_site_name and final_site_name else False
 
-    # Prepare the result text to write to file
-    result = (
-        f"Input URL: {url}\n"
-        f"Current URL: {current_url}\n"
-        f"Extracted keyword: {keyword}\n"
-        f"Contains keyword: {is_valid}\n"
-    )
+    # Determine output file path (defaults to project root)
+    output_file_path = os.getenv("OUTPUT_FILE", "final_url.txt")
 
-    # Create output directory if it doesn't exist
-    os.makedirs("output", exist_ok=True)
+    # Ensure parent directory exists if a path is provided with directories
+    output_dir = os.path.dirname(output_file_path)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
-    # Write the result to a file
-    with open("output/url.txt", "w", encoding="utf-8") as f:
-        f.write(result)
+    # Write only the current URL to the file as per assignment
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        f.write(current_url)
 
-    # Print confirmation message
-    print("URL check completed. Result saved to output/url.txt.")
+    print(f"URL check completed. Current URL saved to {output_file_path}.")
+
+    return current_url, is_valid, input_site_name, final_site_name

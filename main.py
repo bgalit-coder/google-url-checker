@@ -11,4 +11,9 @@ else:
     url = sys.argv[1]
 
 # Run the URL check logic
-check_url(url)
+current_url, is_valid, input_site_name, final_site_name = check_url(url)
+
+# Validate and exit with proper status code
+if not is_valid:
+    print(f"Validation failed: site mismatch. input='{input_site_name}', final='{final_site_name}'")
+    raise SystemExit(1)

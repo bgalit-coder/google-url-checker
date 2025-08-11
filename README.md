@@ -3,14 +3,16 @@ This project is a simple, generic test automation solution that:
 - Opens a Chrome browser
 - Navigates to a user-provided URL (or defaults to https://www.google.com)
 - Captures the current page URL
-- Validates that the URL contains a specific substring (extracted from the domain)
+- Extracts the site name (registrable domain) from both the input URL and the final URL after redirects
+- Validates that both site names match exactly
 - Writes the final URL to a file saved in the project directory (host system if using Docker)
 
 🧰 Tools Used
 - Python 3.11
 - Selenium for browser automation
 - ChromeDriver via webdriver-manager
-- Pytest for future test scalability
+- tldextract for robust domain parsing across TLDs and subdomains
+- Pytest (with one test case) for scalability and CI-ready execution
 - Docker for isolated and portable test execution
 
 📁 Project Structure
@@ -18,62 +20,62 @@ google-url-checker/
 │
 ├── url_checker/
 │   ├── __init__.py
-│   └── checker.py           # Contains logic to check URL and write to file
+│   └── checker.py           # Contains logic to check URL, extract site, and write to file
 │
-├── output/
-│   └── final_url.txt        # Output file written after test run
+├── tests/
+│   └── test_url_checker.py  # Pytest test case
 │
 ├── main.py                  # Entrypoint script to run the test
 ├── requirements.txt         # Project dependencies
 ├── Dockerfile               # Docker build instructions
 └── README.md                # This file
 
-🚀 Run the project locally
+🚀 Run locally
 
-1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/google-url-checker.git
-cd google-url-checker
-
-2. Create a virtual environment and install dependencies
+1. Create and activate a virtual environment
 python -m venv venv
 source venv/bin/activate      # On Windows: venv\Scripts\activate
+
+2. Install dependencies
 pip install -r requirements.txt
 
-3. Run the script with a custom URL
+3. Run the script directly (optional)
 python main.py https://www.wikipedia.org
 If no URL is provided, it defaults to https://www.google.com.
 
-🐳 Run the project in Docker
+4. Run tests with pytest
+pytest -q
+
+🐳 Run in Docker
 
 1. Build the Docker image
 docker build -t google-url-checker .
 
-2. Run the container with optional URL
-docker run --rm -v "${PWD}/output:/app/output" google-url-checker https://www.wikipedia.org
-💡 On Windows (PowerShell):
+2. Run the container with optional URL and save output to host (Bonus)
+# macOS/Linux
+mkdir -p output
+docker run --rm -e OUTPUT_FILE=/app/output/final_url.txt -v "${PWD}/output:/app/output" google-url-checker https://www.wikipedia.org
 
-docker run --rm -v ${PWD}\output:/app/output google-url-checker https://www.wikipedia.org
+# Windows PowerShell
+mkdir output -ea 0
+docker run --rm -e OUTPUT_FILE=/app/output/final_url.txt -v ${PWD}\output:/app/output google-url-checker https://www.wikipedia.org
 
 3. View the output
-After running, check the output/final_url.txt file in your local project folder.
+Check output/final_url.txt on your host machine.
 
 📈 Scalability and Future Improvements
-If given more time, I would:
-Handle more validations (e.g., page title, content checks)
-
-Add support for multiple URLs and parallel execution
-
-Include logging and HTML reporting and handle errors
+- Add page title/content validations and error handling
+- Support multiple URLs and parallel execution
+- Introduce logging and an HTML report (e.g., pytest-html)
+- Add linting (ruff/flake8) and formatting (black) with pre-commit hooks
 
 🧠 Why These Tools?
-- Python: Clear syntax and strong community for testing
-- Selenium: Browser automation standard
-- WebDriver Manager: Simplifies ChromeDriver management
-- Docker: Ensures consistent environment and easy portability
-- Project structure: Encourages modularity, maintainability, and scalability
+- Python: readability and strong testing ecosystem
+- Selenium: browser automation standard
+- WebDriver Manager: auto-manages ChromeDriver
+- tldextract: robustly extracts registrable domain across complex TLDs and subdomains
+- Pytest: simple structure and scalable for multiple tests
+- Docker: consistent environment and easy portability
 
-🏁 Bonus – Saving Output to Host
-This is done using Docker's volume mounting:
-
--v "${PWD}/output:/app/output"
-It maps the container’s /app/output directory to your local machine’s output directory.
+🏁 Notes
+- The output file path is configurable via OUTPUT_FILE env var. By default, the file will be written to final_url.txt in the project root.

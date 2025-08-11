@@ -37,5 +37,6 @@ COPY . .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Define the default command with argument forwarding support
-ENTRYPOINT ["python", "main.py"]
+# Run tests by default
+ENTRYPOINT ["pytest"]
+CMD ["-q"]
