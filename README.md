@@ -21,7 +21,7 @@ google-url-checker/         # Project's root directory
 │   ├── __init__.py
 │   └── checker.py           # Contains logic to check URL, extract site, and write to file
 │
-├── test_failed\passed_<keyword>.txt# File with the final URL saved to root directory    
+├── test_failed\passed_'<keyword>'.txt# File with the final URL saved to root directory    
 │
 ├── main.py                  # Entrypoint script to run the test
 ├── requirements.txt         # Project dependencies
@@ -49,10 +49,10 @@ docker build -t google-url-checker .
 
 2. Run the container with a test URL input and save output to host (Bonus)
 # macOS/Linux
-docker run --rm -e TEST_URL=https://www.wikipedia.org -v "<Project root Path>:/app" google-url-checker
+docker run --rm -e TEST_URL=https://www.wikipedia.org -v "'<Project root Path>':/app" google-url-checker
 
 # Windows PowerShell
-docker run --rm -e TEST_URL=https://www.wikipedia.org -v <Project root Path>:/app google-url-checker
+docker run --rm -e TEST_URL=https://www.wikipedia.org -v '<Project root Path>':/app google-url-checker
 
 3. View the output
 Check test_failed\passed_<keyword>.txt on your host machine.
