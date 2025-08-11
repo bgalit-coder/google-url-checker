@@ -1,4 +1,0 @@
-Input URL: https://www.ynet.co.il
-Current URL: https://www.ynet.co.il/home/0,7340,L-8,00.html
-Extracted keyword: ynet
-Contains keyword: True

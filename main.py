@@ -1,14 +1,14 @@
 # Import necessary modules
+import os
 import sys
 from url_checker.checker import check_url
 
-# Use default URL if none is provided
-if len(sys.argv) < 2:
+# Determine URL precedence: TEST_URL env var > CLI arg > default
+env_url = os.getenv("TEST_URL")
+cli_url = sys.argv[1] if len(sys.argv) >= 2 else None
+url = env_url or cli_url or "https://www.google.com"
+if not env_url and not cli_url:
     print("No URL provided. Using default: https://www.google.com")
-    url = "https://www.google.com"
-else:
-    # Use the user-provided URL
-    url = sys.argv[1]
 
 # Run the URL check logic
 current_url, is_valid, input_site_name, final_site_name = check_url(url)

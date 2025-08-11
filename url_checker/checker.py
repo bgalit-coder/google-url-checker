@@ -7,7 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import os
-import urllib.parse
 import tldextract
 
 # Function to extract the site name (registrable domain's SLD) from any URL
@@ -49,13 +48,12 @@ def check_url(url):
     # Validate that the site names (input vs final) match exactly
     is_valid = (input_site_name.lower() == final_site_name.lower()) if input_site_name and final_site_name else False
 
-    # Determine output file path (defaults to project root)
-    output_file_path = os.getenv("OUTPUT_FILE", "final_url.txt")
-
-    # Ensure parent directory exists if a path is provided with directories
-    output_dir = os.path.dirname(output_file_path)
-    if output_dir:
-        os.makedirs(output_dir, exist_ok=True)
+    # Determine output file path (defaults to project root). Allow override via OUTPUT_FILE env var.
+ 
+    output_file_path = (
+        f"test_passed_{input_site_name.lower()}.txt" if is_valid
+        else f"test_failed_{input_site_name.lower()}.txt"
+    )
 
     # Write only the current URL to the file as per assignment
     with open(output_file_path, "w", encoding="utf-8") as f:
