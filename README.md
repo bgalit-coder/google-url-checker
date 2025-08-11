@@ -12,18 +12,16 @@ This project is a simple, generic test automation solution that:
 - Selenium for browser automation
 - ChromeDriver via webdriver-manager
 - tldextract for robust domain parsing across TLDs and subdomains
-- Pytest (with one test case) for scalability and CI-ready execution
 - Docker for isolated and portable test execution
 
 📁 Project Structure
-google-url-checker/
+google-url-checker/         # Project's root directory
 │
 ├── url_checker/
 │   ├── __init__.py
 │   └── checker.py           # Contains logic to check URL, extract site, and write to file
 │
-├── tests/
-│   └── test_url_checker.py  # Pytest test case
+├── test_failed\passed_<keyword>.txt# File with the final URL saved to root directory    
 │
 ├── main.py                  # Entrypoint script to run the test
 ├── requirements.txt         # Project dependencies
@@ -49,31 +47,17 @@ If no URL is provided, it defaults to https://www.google.com.
 1. Build the Docker image
 docker build -t google-url-checker .
 
-2. Run the container with optional URL and save output to host (Bonus)
+2. Run the container with a test URL input and save output to host (Bonus)
 # macOS/Linux
-mkdir -p output
-docker run --rm -e OUTPUT_FILE=/app/output/final_url.txt -v "${PWD}/output:/app/output" google-url-checker https://www.wikipedia.org
+docker run --rm -e TEST_URL=https://www.wikipedia.org -v "<Project root Path>:/app" google-url-checker
 
 # Windows PowerShell
-mkdir output -ea 0
-docker run --rm -e OUTPUT_FILE=/app/output/final_url.txt -v ${PWD}\output:/app/output google-url-checker https://www.wikipedia.org
+docker run --rm -e TEST_URL=https://www.wikipedia.org -v <Project root Path>:/app google-url-checker
 
 3. View the output
-Check output/final_url.txt on your host machine.
+Check test_failed\passed_<keyword>.txt on your host machine.
 
-📈 Scalability and Future Improvements
-- Add page title/content validations and error handling
-- Support multiple URLs and parallel execution
-- Introduce logging and an HTML report (e.g., pytest-html)
-- Add linting (ruff/flake8) and formatting (black) with pre-commit hooks
-
-🧠 Why These Tools?
-- Python: readability and strong testing ecosystem
-- Selenium: browser automation standard
-- WebDriver Manager: auto-manages ChromeDriver
-- tldextract: robustly extracts registrable domain across complex TLDs and subdomains
-- Pytest: simple structure and scalable for multiple tests
-- Docker: consistent environment and easy portability
 
 🏁 Notes
-- The output file path is configurable via OUTPUT_FILE env var. By default, the file will be written to final_url.txt in the project root.
+- Provide the test URL via TEST_URL env var, or pass it as a CLI arg: `docker run --rm google-url-checker https://www.wikipedia.org`.
+- Optionally override the output filename via OUTPUT_FILE env var. By default, the file will be written in the project root inside the container (mounted to host when volume is used).

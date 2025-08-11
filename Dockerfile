@@ -37,6 +37,5 @@ COPY . .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run tests by default
-ENTRYPOINT ["pytest"]
-CMD ["-q"]
+# Default entrypoint runs pytest; parameters can be passed via env vars or CLI
+ENTRYPOINT ["python", "main.py"]
